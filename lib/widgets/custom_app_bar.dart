@@ -66,7 +66,7 @@ class _CustomAppBarDesktop extends StatelessWidget {
     return SafeArea(
       child: Row(
         children: [
-          Image.asset('assets/images/netflix_logo.png'),
+          Image.asset('assets/images/netflix_logo.png', height: 30.0),
           const SizedBox(width: 12.0),
           Expanded(
             child: Row(
@@ -118,8 +118,8 @@ class _CustomAppBarDesktop extends StatelessWidget {
               ClipOval(
                 child: Image.asset(
                   'assets/images/avatar.jpg',
-                  width: 40.0,
-                  height: 40.0,
+                  width: 50.0,
+                  height: 50.0,
                   fit: BoxFit.cover,
                 ),
               ),

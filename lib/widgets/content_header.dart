@@ -62,7 +62,7 @@ class _ContentHeaderMobile extends StatelessWidget {
                 ),
                 const SizedBox(height: 15.0),
                 Text(
-                  'Nasza piękna przygoda <3',
+                  'Nasza piękna historia 😍❤️',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18.0,
@@ -92,7 +92,6 @@ class _ContentHeaderMobile extends StatelessWidget {
                 title: 'List',
                 onTap: () => null,
               ),
-              _PlayButton(),
               VerticalIconButton(
                 icon: Icons.info_outline,
                 title: 'Info',
@@ -137,9 +136,12 @@ class __ContentHeaderDesktopState extends State<_ContentHeaderDesktop> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _videoController.value.isPlaying
-          ? _videoController.pause()
-          : _videoController.play(),
+      onTap: () {
+        _videoController.value.isPlaying
+            ? _videoController.pause()
+            : _videoController.play();
+        setState(() => {});
+      },
       child: Stack(
         alignment: Alignment.bottomLeft,
         children: [
@@ -186,7 +188,7 @@ class __ContentHeaderDesktopState extends State<_ContentHeaderDesktop> {
                 ),
                 const SizedBox(height: 15.0),
                 Text(
-                  'Nasza piękna przygoda <3',
+                  'Nasza piękna historia 😍❤️',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18.0,
@@ -203,7 +205,7 @@ class __ContentHeaderDesktopState extends State<_ContentHeaderDesktop> {
                 const SizedBox(height: 20.0),
                 Row(
                   children: [
-                    _PlayButton(),
+                    _PlayButton(_videoController),
                     const SizedBox(width: 16.0),
                     TextButton.icon(
                       style: ButtonStyle(
@@ -250,7 +252,16 @@ class __ContentHeaderDesktopState extends State<_ContentHeaderDesktop> {
   }
 }
 
-class _PlayButton extends StatelessWidget {
+class _PlayButton extends StatefulWidget {
+  _PlayButton(this._videoController);
+
+  final VideoPlayerController _videoController;
+
+  @override
+  State<_PlayButton> createState() => _PlayButtonState();
+}
+
+class _PlayButtonState extends State<_PlayButton> {
   @override
   Widget build(BuildContext context) {
     return TextButton.icon(
@@ -264,10 +275,19 @@ class _PlayButton extends StatelessWidget {
           Colors.white,
         ),
       ),
-      onPressed: () => null,
-      icon: const Icon(Icons.play_arrow, size: 30.0),
-      label: const Text(
-        'Play',
+      onPressed: () {
+        widget._videoController.value.isPlaying
+            ? widget._videoController.pause()
+            : widget._videoController.play();
+        setState(() => {});
+      },
+      icon: Icon(
+          widget._videoController.value.isPlaying
+              ? Icons.pause
+              : Icons.play_arrow,
+          size: 30.0),
+      label: Text(
+        widget._videoController.value.isPlaying ? 'Pause' : 'Play',
         style: TextStyle(
           fontSize: 16.0,
           fontWeight: FontWeight.w600,

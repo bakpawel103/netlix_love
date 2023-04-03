@@ -25,8 +25,6 @@ class ContentList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(contentList.length);
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Column(
@@ -45,13 +43,9 @@ class ContentList extends StatelessWidget {
           ),
           Container(
             height: isOriginals ? 500.0 : 220.0,
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 12.0,
-                horizontal: 16.0,
-              ),
+            child: Expanded(
               child: ListView.builder(
+                shrinkWrap: true,
                 padding: const EdgeInsets.symmetric(
                   vertical: 12.0,
                   horizontal: 16.0,
@@ -68,7 +62,54 @@ class ContentList extends StatelessWidget {
                           AsyncSnapshot<Uint8List?> snapshot) {
                         if (snapshot.hasData) {
                           if (snapshot.data == null) {
-                            return Container(
+                            return MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                height: isOriginals ? 400.0 : 200.0,
+                                width: isOriginals ? 250.0 : 130.0,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey,
+                                ),
+                                child: CupertinoActivityIndicator(
+                                    color: Colors.black),
+                              ),
+                            );
+                          }
+                          return MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              height: isOriginals ? 400.0 : 200.0,
+                              width: isOriginals ? 250.0 : 130.0,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: MemoryImage(snapshot.data!),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          );
+                        } else if (snapshot.hasError) {
+                          return MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              height: isOriginals ? 400.0 : 200.0,
+                              width: isOriginals ? 250.0 : 130.0,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                              ),
+                              child: Icon(Icons.remove),
+                            ),
+                          );
+                        } else {
+                          return MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: Container(
                               margin:
                                   const EdgeInsets.symmetric(horizontal: 8.0),
                               height: isOriginals ? 400.0 : 200.0,
@@ -78,39 +119,7 @@ class ContentList extends StatelessWidget {
                               ),
                               child: CupertinoActivityIndicator(
                                   color: Colors.black),
-                            );
-                          }
-                          return Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                            height: isOriginals ? 400.0 : 200.0,
-                            width: isOriginals ? 250.0 : 130.0,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: MemoryImage(snapshot.data!),
-                                fit: BoxFit.cover,
-                              ),
                             ),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                            height: isOriginals ? 400.0 : 200.0,
-                            width: isOriginals ? 250.0 : 130.0,
-                            decoration: BoxDecoration(
-                              color: Colors.grey,
-                            ),
-                            child: Icon(Icons.remove),
-                          );
-                        } else {
-                          return Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                            height: isOriginals ? 400.0 : 200.0,
-                            width: isOriginals ? 250.0 : 130.0,
-                            decoration: BoxDecoration(
-                              color: Colors.grey,
-                            ),
-                            child:
-                                CupertinoActivityIndicator(color: Colors.black),
                           );
                         }
                       },

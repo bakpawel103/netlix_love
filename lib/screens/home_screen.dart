@@ -33,8 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<GoogleDriveProvider>(context);
-
     final Size screenSize = MediaQuery.of(context).size;
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -44,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: null,
       ),
       appBar: PreferredSize(
-        preferredSize: Size(screenSize.width, 50.0),
+        preferredSize: Size(screenSize.width, 60.0),
         child: BlocBuilder<AppBarCubit, double>(
           builder: (context, scrollOffset) {
             return CustomAppBar(scrollOffset: scrollOffset);
