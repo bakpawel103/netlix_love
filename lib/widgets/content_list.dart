@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:googleapis/drive/v3.dart';
@@ -47,11 +50,11 @@ class ContentList extends StatelessWidget {
               itemBuilder: (BuildContext context, int index) {
                 final File content = contentList[index];
                 return GestureDetector(
-                  onTap: () => print(content.toJson()),
+                  onTap: () => _imageClicked(context, content),
                   child: FutureBuilder(
-                    future: _buildImage(context, content.id),
+                    future: _buildImage(context, content),
                     builder: (BuildContext context,
-                        AsyncSnapshot<String?> snapshot) {
+                        AsyncSnapshot<Uint8List?> snapshot) {
                       if (snapshot.hasData) {
                         if (snapshot.data == null) {
                           return Container(
@@ -61,6 +64,8 @@ class ContentList extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: Colors.grey,
                             ),
+                            child:
+                                CupertinoActivityIndicator(color: Colors.black),
                           );
                         }
                         return Container(
@@ -69,7 +74,7 @@ class ContentList extends StatelessWidget {
                           width: isOriginals ? 200.0 : 130.0,
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage(snapshot.data!),
+                              image: MemoryImage(snapshot.data!),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -82,6 +87,7 @@ class ContentList extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Colors.grey,
                           ),
+                          child: Icon(Icons.remove),
                         );
                       } else {
                         return Container(
@@ -91,6 +97,8 @@ class ContentList extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Colors.grey,
                           ),
+                          child:
+                              CupertinoActivityIndicator(color: Colors.black),
                         );
                       }
                     },
@@ -104,13 +112,73 @@ class ContentList extends StatelessWidget {
     );
   }
 
-  Future<String?> _buildImage(BuildContext context, String? id) async {
-    if (id == null) {
+  Future<Uint8List?> _buildImage(BuildContext context, File? content) async {
+    if (content == null) {
       return null;
     }
 
     final provider = Provider.of<GoogleDriveProvider>(context, listen: false);
 
-    return provider.googleDrive.fetchImage(id);
+    return provider.googleDrive.fetchImage(content);
+  }
+
+  _imageClicked(BuildContext context, File content) {
+    var width = MediaQuery.of(context).size.width * 1 / 3;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog.fullscreen(
+          backgroundColor: Colors.black,
+          child: Stack(
+            children: <Widget>[
+              Positioned(
+                right: 20.0,
+                top: 20.0,
+                child: IconButton(
+                  iconSize: 20,
+                  color: Colors.white,
+                  icon: const Icon(Icons.remove),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+              Center(
+                child: FutureBuilder(
+                  future: _buildBigImage(context, content, width),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<Uint8List?> snapshot) {
+                    if (snapshot.hasData) {
+                      if (snapshot.data == null) {
+                        return SizedBox();
+                      }
+                      return Image.memory(snapshot.data!);
+                    } else if (snapshot.hasError) {
+                      return SizedBox();
+                    } else {
+                      return CupertinoActivityIndicator(
+                        color: Colors.white,
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<Uint8List?> _buildBigImage(
+      BuildContext context, File? content, double width) async {
+    if (content == null) {
+      return null;
+    }
+
+    final provider = Provider.of<GoogleDriveProvider>(context, listen: false);
+
+    return provider.googleDrive.fetchImage(content, size: width);
   }
 }

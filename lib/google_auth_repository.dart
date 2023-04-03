@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:flutter_netflix_responsive_ui/google_auth_client.dart';
 import 'package:googleapis/drive/v3.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'package:http/http.dart' as http;
 
 class GoogleAuthRepository {
   Map<String, String>? authHeaders;
@@ -23,15 +27,19 @@ class GoogleAuthRepository {
 
   Future<List<File>?> fetchCategories() async {
     // Get categories
-    var categories =
-        await driveApi?.files.list(q: "'$Netflix_catalog_id' in parents");
+    var categories = await driveApi?.files.list(
+        q: "'$Netflix_catalog_id' in parents",
+        $fields:
+            'files(kind,id,name,mimeType,thumbnailLink,hasThumbnail,imageMediaMetadata(location))');
     if (categories == null || categories.files == null) {
       return null;
     }
 
     for (var categoryFile in categories.files!) {
-      var imagesFiles =
-          await driveApi?.files.list(q: "'${categoryFile.id}' in parents");
+      var imagesFiles = await driveApi?.files.list(
+          q: "'${categoryFile.id}' in parents",
+          $fields:
+              'files(kind,id,name,mimeType,thumbnailLink,hasThumbnail,imageMediaMetadata(location))');
       if (imagesFiles == null || imagesFiles.files == null) {
         return null;
       }
@@ -40,10 +48,31 @@ class GoogleAuthRepository {
     }
   }
 
-  Future<String> fetchImage(String id) async {
-    var image = await driveApi?.files
-        .get(id, downloadOptions: DownloadOptions.fullMedia);
+  Future<Uint8List?> fetchImage(File content, {double? size}) async {
+    if (content.hasThumbnail == null || content.hasThumbnail == false) {
+      print('[${content.id}] has no thumbnail');
+      return null;
+    }
 
-    return image.toString();
+    if (size != null) {
+      content.thumbnailLink = content.thumbnailLink
+          ?.replaceAll(RegExp(r'[s][0-9]{3}'), 's${size.toInt()}');
+    }
+
+    print(content.thumbnailLink);
+
+    http.Response? response;
+    try {
+      response = await http.get(Uri.parse(content.thumbnailLink!));
+    } catch (e) {
+      print(e);
+    }
+
+    if (response == null) {
+      print('[${content.id}] error downloading thumbnail...');
+      return null;
+    }
+
+    return response.bodyBytes;
   }
 }
