@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:googleapis/drive/v3.dart';
 import 'package:provider/provider.dart';
@@ -133,10 +135,10 @@ class ContentList extends StatelessWidget {
           child: Stack(
             children: <Widget>[
               Positioned(
-                right: 20.0,
-                top: 20.0,
+                right: 30.0,
+                top: 30.0,
                 child: IconButton(
-                  iconSize: 20,
+                  iconSize: 30,
                   color: Colors.white,
                   icon: const Icon(Icons.remove),
                   onPressed: () {
@@ -145,23 +147,52 @@ class ContentList extends StatelessWidget {
                 ),
               ),
               Center(
-                child: FutureBuilder(
-                  future: _buildBigImage(context, content, width),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<Uint8List?> snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data == null) {
-                        return SizedBox();
-                      }
-                      return Image.memory(snapshot.data!);
-                    } else if (snapshot.hasError) {
-                      return SizedBox();
-                    } else {
-                      return CupertinoActivityIndicator(
-                        color: Colors.white,
-                      );
-                    }
-                  },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FutureBuilder(
+                      future: _buildBigImage(context, content, width),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<Uint8List?> snapshot) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data == null) {
+                            return SizedBox();
+                          }
+                          return Image.memory(snapshot.data!);
+                        } else if (snapshot.hasError) {
+                          return SizedBox();
+                        } else {
+                          return CupertinoActivityIndicator(
+                            color: Colors.white,
+                          );
+                        }
+                      },
+                    ),
+                    SizedBox(height: 30.0),
+                    FutureBuilder(
+                      future: _getImageAddress(content),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<String?> snapshot) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data == null) {
+                            return SizedBox();
+                          }
+                          return Text(
+                            snapshot.data!,
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          );
+                        } else if (snapshot.hasError) {
+                          return SizedBox();
+                        } else {
+                          return CupertinoActivityIndicator(
+                            color: Colors.white,
+                          );
+                        }
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -180,5 +211,30 @@ class ContentList extends StatelessWidget {
     final provider = Provider.of<GoogleDriveProvider>(context, listen: false);
 
     return provider.googleDrive.fetchImage(content, size: width);
+  }
+
+  Future<String> _getImageAddress(File? content) async {
+    if (content == null ||
+        content.imageMediaMetadata == null ||
+        content.imageMediaMetadata?.location == null ||
+        content.imageMediaMetadata?.location?.latitude == null ||
+        content.imageMediaMetadata?.location?.longitude == null) {
+      return "Can't find location...";
+    }
+
+    print(content.imageMediaMetadata?.location?.toJson().toString());
+
+    var response = await http.get(Uri.parse(
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=${content.imageMediaMetadata?.location?.latitude},${content.imageMediaMetadata?.location?.longitude}&key=AIzaSyDlxDVy4VJHsbBfRGhuyC0PZsZR23i5HqY'));
+
+    if (jsonDecode(response.body)['results'] == null ||
+        jsonDecode(response.body)['results'][0] == null ||
+        jsonDecode(response.body)['results'][0]['formatted_address'] == null) {
+      return "Can't find location...";
+    }
+
+    print(jsonDecode(response.body)['results'][0]?['formatted_address']);
+
+    return jsonDecode(response.body)['results'][0]?['formatted_address'];
   }
 }

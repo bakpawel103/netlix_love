@@ -8,7 +8,7 @@
             "name": "Chrome on 3000 port",
             "request": "launch",
             "type": "dart",
-            "args": ["--web-port", "3000"]
+            "args": ["--web-port", "3000", "--no-sound-null-safety"]
         },
         {
             "name": "netlix_love",

@@ -49,6 +49,7 @@ class GoogleAuthRepository {
   }
 
   Future<Uint8List?> fetchImage(File content, {double? size}) async {
+    print(content.thumbnailLink);
     if (content.hasThumbnail == null || content.hasThumbnail == false) {
       print('[${content.id}] has no thumbnail');
       return null;
@@ -59,13 +60,11 @@ class GoogleAuthRepository {
           ?.replaceAll(RegExp(r'[s][0-9]{3}'), 's${size.toInt()}');
     }
 
-    print(content.thumbnailLink);
-
     http.Response? response;
     try {
       response = await http.get(Uri.parse(content.thumbnailLink!));
     } catch (e) {
-      print(e);
+      print(e.toString());
     }
 
     if (response == null) {
