@@ -38,7 +38,12 @@ class GoogleAuthRepository {
 
       categoriesFiles.addEntries([MapEntry(categoryFile, imagesFiles.files)]);
     }
+  }
 
-    print(categoriesFiles);
+  Future<String> fetchImage(String id) async {
+    var image = await driveApi?.files
+        .get(id, downloadOptions: DownloadOptions.fullMedia);
+
+    return image.toString();
   }
 }

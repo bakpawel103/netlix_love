@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:googleapis/drive/v3.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/google_drive_provider.dart';
 
 class ContentList extends StatelessWidget {
   final String title;
@@ -44,17 +47,53 @@ class ContentList extends StatelessWidget {
               itemBuilder: (BuildContext context, int index) {
                 final File content = contentList[index];
                 return GestureDetector(
-                  onTap: () => print(content.name),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                    height: isOriginals ? 400.0 : 200.0,
-                    width: isOriginals ? 200.0 : 130.0,
-                    /*decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(content.imageUrl),
-                        fit: BoxFit.cover,
-                      ),
-                    ),*/
+                  onTap: () => print(content.toJson()),
+                  child: FutureBuilder(
+                    future: _buildImage(context, content.id),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<String?> snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data == null) {
+                          return Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                            height: isOriginals ? 400.0 : 200.0,
+                            width: isOriginals ? 200.0 : 130.0,
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                            ),
+                          );
+                        }
+                        return Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                          height: isOriginals ? 400.0 : 200.0,
+                          width: isOriginals ? 200.0 : 130.0,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(snapshot.data!),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                          height: isOriginals ? 400.0 : 200.0,
+                          width: isOriginals ? 200.0 : 130.0,
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                          ),
+                        );
+                      } else {
+                        return Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                          height: isOriginals ? 400.0 : 200.0,
+                          width: isOriginals ? 200.0 : 130.0,
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                          ),
+                        );
+                      }
+                    },
                   ),
                 );
               },
@@ -63,5 +102,15 @@ class ContentList extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<String?> _buildImage(BuildContext context, String? id) async {
+    if (id == null) {
+      return null;
+    }
+
+    final provider = Provider.of<GoogleDriveProvider>(context, listen: false);
+
+    return provider.googleDrive.fetchImage(id);
   }
 }
