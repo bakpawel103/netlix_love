@@ -1,24 +1,26 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_netflix_responsive_ui/cubits/cubits.dart';
-import 'package:flutter_netflix_responsive_ui/data/data.dart';
 import 'package:flutter_netflix_responsive_ui/widgets/widgets.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/google_drive_provider.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key key}) : super(key: key);
+  const HomeScreen({required Key key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  ScrollController _scrollController;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     _scrollController = ScrollController()
       ..addListener(() {
-        context.bloc<AppBarCubit>().setOffset(_scrollController.offset);
+        context.read<AppBarCubit>().setOffset(_scrollController.offset);
       });
     super.initState();
   }
@@ -31,6 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<GoogleDriveProvider>(context);
+
     final Size screenSize = MediaQuery.of(context).size;
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -49,47 +53,49 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: CustomScrollView(
         controller: _scrollController,
-        slivers: [
-          SliverToBoxAdapter(
-            child: ContentHeader(featuredContent: sintelContent),
-          ),
+        slivers: _generateSilvers(),
+      ),
+    );
+  }
+
+  List<Widget> _generateSilvers() {
+    final provider = Provider.of<GoogleDriveProvider>(context, listen: false);
+    List<Widget> silvers = [];
+
+    silvers.add(
+      SliverToBoxAdapter(
+        child: ContentHeader(),
+      ),
+    );
+
+    var index = 0;
+    for (var file in provider.googleDrive.categoriesFiles.entries) {
+      if (index == 0) {
+        silvers.add(
           SliverPadding(
             padding: const EdgeInsets.only(top: 20.0),
             sliver: SliverToBoxAdapter(
-              child: Previews(
-                key: PageStorageKey('previews'),
-                title: 'Previews',
-                contentList: previews,
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: ContentList(
-              key: PageStorageKey('myList'),
-              title: 'My List',
-              contentList: myList,
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: ContentList(
-              key: PageStorageKey('originals'),
-              title: 'Netflix Originals',
-              contentList: originals,
-              isOriginals: true,
-            ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.only(bottom: 20.0),
-            sliver: SliverToBoxAdapter(
               child: ContentList(
-                key: PageStorageKey('trending'),
-                title: 'Trending',
-                contentList: trending,
+                key: PageStorageKey(file.key.name ?? 'None'),
+                title: file.key.name ?? 'None',
+                contentList: file.value ?? [],
               ),
             ),
-          )
-        ],
-      ),
-    );
+          ),
+        );
+      } else {
+        silvers.add(SliverToBoxAdapter(
+          child: ContentList(
+            key: PageStorageKey(file.key.name ?? 'None'),
+            title: file.key.name ?? 'None',
+            contentList: file.value ?? [],
+          ),
+        ));
+      }
+
+      index++;
+    }
+
+    return silvers;
   }
 }

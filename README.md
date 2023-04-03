@@ -7,3 +7,5 @@
 ![Mobile Screenshot 1](screenshots/mobile0.png)
 
 ![Mobile Screenshot 2](screenshots/mobile1.png)
+
+flutter run -d chrome --web-port 3000

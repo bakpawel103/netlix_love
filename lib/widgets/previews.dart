@@ -7,9 +7,9 @@ class Previews extends StatelessWidget {
   final List<Content> contentList;
 
   const Previews({
-    Key key,
-    @required this.title,
-    @required this.contentList,
+    Key? key,
+    required this.title,
+    required this.contentList,
   }) : super(key: key);
 
   @override

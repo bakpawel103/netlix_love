@@ -1,0 +1,31 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Chrome on 3000 port",
+            "request": "launch",
+            "type": "dart",
+            "args": ["--web-port", "3000"]
+        },
+        {
+            "name": "netlix_love",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "netlix_love (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "netlix_love (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

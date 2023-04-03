@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_netflix_responsive_ui/models/models.dart';
+import 'package:googleapis/drive/v3.dart';
 
 class ContentList extends StatelessWidget {
   final String title;
-  final List<Content> contentList;
+  final List<File> contentList;
   final bool isOriginals;
 
   const ContentList({
-    Key key,
-    @required this.title,
-    @required this.contentList,
+    Key? key,
+    required this.title,
+    required this.contentList,
     this.isOriginals = false,
   }) : super(key: key);
 
@@ -42,19 +42,19 @@ class ContentList extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemCount: contentList.length,
               itemBuilder: (BuildContext context, int index) {
-                final Content content = contentList[index];
+                final File content = contentList[index];
                 return GestureDetector(
                   onTap: () => print(content.name),
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 8.0),
                     height: isOriginals ? 400.0 : 200.0,
                     width: isOriginals ? 200.0 : 130.0,
-                    decoration: BoxDecoration(
+                    /*decoration: BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage(content.imageUrl),
                         fit: BoxFit.cover,
                       ),
-                    ),
+                    ),*/
                   ),
                 );
               },

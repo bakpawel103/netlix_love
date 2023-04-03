@@ -16,14 +16,15 @@ class _NavScreenState extends State<NavScreen> {
     Scaffold(),
     Scaffold(),
     Scaffold(),
+    Scaffold(),
   ];
 
   final Map<String, IconData> _icons = const {
-    'Home': Icons.home,
-    'Search': Icons.search,
-    'Coming Soon': Icons.queue_play_next,
-    'Downloads': Icons.file_download,
-    'More': Icons.menu,
+    'Strona główna': Icons.home,
+    'Wyszukaj': Icons.search,
+    'Wkrótce': Icons.queue_play_next,
+    'Pobrane': Icons.file_download,
+    'Więcej': Icons.menu,
   };
 
   int _currentIndex = 0;
@@ -44,7 +45,7 @@ class _NavScreenState extends State<NavScreen> {
                       title,
                       BottomNavigationBarItem(
                         icon: Icon(icon, size: 30.0),
-                        title: Text(title),
+                        label: title,
                       )))
                   .values
                   .toList(),
