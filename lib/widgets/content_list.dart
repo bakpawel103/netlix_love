@@ -43,70 +43,25 @@ class ContentList extends StatelessWidget {
           ),
           Container(
             height: isOriginals ? 500.0 : 220.0,
-            child: Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12.0,
-                  horizontal: 16.0,
-                ),
-                scrollDirection: Axis.horizontal,
-                itemCount: contentList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final File content = contentList[index];
-                  return GestureDetector(
-                    onTap: () => _imageClicked(context, content),
-                    child: FutureBuilder(
-                      future: _buildImage(context, content),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<Uint8List?> snapshot) {
-                        if (snapshot.hasData) {
-                          if (snapshot.data == null) {
-                            return MouseRegion(
-                              cursor: SystemMouseCursors.click,
-                              child: Container(
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                height: isOriginals ? 400.0 : 200.0,
-                                width: isOriginals ? 250.0 : 130.0,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey,
-                                ),
-                                child: CupertinoActivityIndicator(
-                                    color: Colors.black),
-                              ),
-                            );
-                          }
-                          return MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              height: isOriginals ? 400.0 : 200.0,
-                              width: isOriginals ? 250.0 : 130.0,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: MemoryImage(snapshot.data!),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          );
-                        } else if (snapshot.hasError) {
-                          return MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              height: isOriginals ? 400.0 : 200.0,
-                              width: isOriginals ? 250.0 : 130.0,
-                              decoration: BoxDecoration(
-                                color: Colors.grey,
-                              ),
-                              child: Icon(Icons.remove),
-                            ),
-                          );
-                        } else {
+            child: ListView.builder(
+              controller: ScrollController(),
+              shrinkWrap: true,
+              padding: const EdgeInsets.symmetric(
+                vertical: 12.0,
+                horizontal: 16.0,
+              ),
+              scrollDirection: Axis.horizontal,
+              itemCount: contentList.length,
+              itemBuilder: (BuildContext context, int index) {
+                final File content = contentList[index];
+                return GestureDetector(
+                  onTap: () => _imageClicked(context, content),
+                  child: FutureBuilder(
+                    future: _buildImage(context, content),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<Uint8List?> snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data == null) {
                           return MouseRegion(
                             cursor: SystemMouseCursors.click,
                             child: Container(
@@ -122,11 +77,52 @@ class ContentList extends StatelessWidget {
                             ),
                           );
                         }
-                      },
-                    ),
-                  );
-                },
-              ),
+                        return MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                            height: isOriginals ? 400.0 : 200.0,
+                            width: isOriginals ? 250.0 : 130.0,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: MemoryImage(snapshot.data!),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                            height: isOriginals ? 400.0 : 200.0,
+                            width: isOriginals ? 250.0 : 130.0,
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                            ),
+                            child: Icon(Icons.remove),
+                          ),
+                        );
+                      } else {
+                        return MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                            height: isOriginals ? 400.0 : 200.0,
+                            width: isOriginals ? 250.0 : 130.0,
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                            ),
+                            child:
+                                CupertinoActivityIndicator(color: Colors.black),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                );
+              },
             ),
           ),
         ],
