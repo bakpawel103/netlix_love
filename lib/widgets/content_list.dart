@@ -45,28 +45,67 @@ class ContentList extends StatelessWidget {
           ),
           Container(
             height: isOriginals ? 500.0 : 220.0,
-            child: ListView.builder(
-              shrinkWrap: true,
+            width: double.infinity,
+            child: Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 12.0,
                 horizontal: 16.0,
               ),
-              scrollDirection: Axis.horizontal,
-              itemCount: contentList.length,
-              itemBuilder: (BuildContext context, int index) {
-                final File content = contentList[index];
-                return GestureDetector(
-                  onTap: () => _imageClicked(context, content),
-                  child: FutureBuilder(
-                    future: _buildImage(context, content),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<Uint8List?> snapshot) {
-                      if (snapshot.hasData) {
-                        if (snapshot.data == null) {
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12.0,
+                  horizontal: 16.0,
+                ),
+                scrollDirection: Axis.horizontal,
+                itemCount: contentList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final File content = contentList[index];
+                  return GestureDetector(
+                    onTap: () => _imageClicked(context, content),
+                    child: FutureBuilder(
+                      future: _buildImage(context, content),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<Uint8List?> snapshot) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data == null) {
+                            return Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              height: isOriginals ? 400.0 : 200.0,
+                              width: isOriginals ? 250.0 : 130.0,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                              ),
+                              child: CupertinoActivityIndicator(
+                                  color: Colors.black),
+                            );
+                          }
                           return Container(
                             margin: const EdgeInsets.symmetric(horizontal: 8.0),
                             height: isOriginals ? 400.0 : 200.0,
-                            width: isOriginals ? 200.0 : 130.0,
+                            width: isOriginals ? 250.0 : 130.0,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: MemoryImage(snapshot.data!),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                            height: isOriginals ? 400.0 : 200.0,
+                            width: isOriginals ? 250.0 : 130.0,
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                            ),
+                            child: Icon(Icons.remove),
+                          );
+                        } else {
+                          return Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                            height: isOriginals ? 400.0 : 200.0,
+                            width: isOriginals ? 250.0 : 130.0,
                             decoration: BoxDecoration(
                               color: Colors.grey,
                             ),
@@ -74,43 +113,11 @@ class ContentList extends StatelessWidget {
                                 CupertinoActivityIndicator(color: Colors.black),
                           );
                         }
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                          height: isOriginals ? 400.0 : 200.0,
-                          width: isOriginals ? 200.0 : 130.0,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: MemoryImage(snapshot.data!),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                          height: isOriginals ? 400.0 : 200.0,
-                          width: isOriginals ? 200.0 : 130.0,
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                          ),
-                          child: Icon(Icons.remove),
-                        );
-                      } else {
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                          height: isOriginals ? 400.0 : 200.0,
-                          width: isOriginals ? 200.0 : 130.0,
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                          ),
-                          child:
-                              CupertinoActivityIndicator(color: Colors.black),
-                        );
-                      }
-                    },
-                  ),
-                );
-              },
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],
@@ -125,7 +132,8 @@ class ContentList extends StatelessWidget {
 
     final provider = Provider.of<GoogleDriveProvider>(context, listen: false);
 
-    return provider.googleDrive.fetchImage(content);
+    return provider.googleDrive
+        .fetchImage(content, size: isOriginals ? 500 : null);
   }
 
   _imageClicked(BuildContext context, File content) {

@@ -68,6 +68,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
 
+    const Originals = 'Originals';
+
     var index = 0;
     for (var file in provider.googleDrive.categoriesFiles.entries) {
       if (index == 0) {
@@ -79,18 +81,36 @@ class _HomeScreenState extends State<HomeScreen> {
                 key: PageStorageKey(file.key.name ?? 'None'),
                 title: file.key.name ?? 'None',
                 contentList: file.value ?? [],
+                isOriginals: file.key.name == Originals,
               ),
             ),
           ),
         );
       } else {
-        silvers.add(SliverToBoxAdapter(
-          child: ContentList(
-            key: PageStorageKey(file.key.name ?? 'None'),
-            title: file.key.name ?? 'None',
-            contentList: file.value ?? [],
-          ),
-        ));
+        if (file.key.name == Originals) {
+          silvers.insert(
+            1,
+            SliverToBoxAdapter(
+              child: ContentList(
+                key: PageStorageKey(file.key.name ?? 'None'),
+                title: file.key.name ?? 'None',
+                contentList: file.value ?? [],
+                isOriginals: file.key.name == Originals,
+              ),
+            ),
+          );
+        } else {
+          silvers.add(
+            SliverToBoxAdapter(
+              child: ContentList(
+                key: PageStorageKey(file.key.name ?? 'None'),
+                title: file.key.name ?? 'None',
+                contentList: file.value ?? [],
+                isOriginals: file.key.name == Originals,
+              ),
+            ),
+          );
+        }
       }
 
       index++;
