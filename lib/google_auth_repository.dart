@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_netflix_responsive_ui/google_auth_client.dart';
 import 'package:googleapis/drive/v3.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in_web/google_sign_in_web.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -16,12 +16,17 @@ class GoogleAuthRepository {
   static final String Netflix_catalog_id = '1HSgNR-rU1kXAxNC26_2jjYiY15FUJe_x';
 
   Future<void> signIn() async {
-    final googleSignIn = GoogleSignIn.standard(scopes: [DriveApi.driveScope]);
-    final GoogleSignInAccount? account = await googleSignIn.signIn();
-    print("User account $account");
+    var googleSignInPlugin = GoogleSignInPlugin();
+    final googleSignIn =
+        await googleSignInPlugin.init(scopes: [DriveApi.driveScope]);
+    var account = await googleSignInPlugin.signIn();
+    var tokens = await googleSignInPlugin.getTokens(email: account!.email);
+    var authHeaders = {
+      'Authorization': 'Bearer ${tokens.accessToken}',
+      'X-Goog-AuthUser': '0'
+    };
 
-    authHeaders = await account?.authHeaders;
-    authenticateClient = GoogleAuthClient(authHeaders!);
+    authenticateClient = GoogleAuthClient(authHeaders);
     driveApi = DriveApi(authenticateClient!);
   }
 
@@ -30,7 +35,7 @@ class GoogleAuthRepository {
     var categories = await driveApi?.files.list(
         q: "'$Netflix_catalog_id' in parents",
         $fields:
-            'files(kind,id,name,mimeType,thumbnailLink,hasThumbnail,imageMediaMetadata(location))');
+            'files(kind,id,name,mimeType,thumbnailLink,hasThumbnail,imageMediaMetadata(location,time))');
     if (categories == null || categories.files == null) {
       return null;
     }
@@ -39,7 +44,7 @@ class GoogleAuthRepository {
       var imagesFiles = await driveApi?.files.list(
           q: "'${categoryFile.id}' in parents",
           $fields:
-              'files(kind,id,name,mimeType,thumbnailLink,hasThumbnail,imageMediaMetadata(location))');
+              'files(kind,id,name,mimeType,thumbnailLink,hasThumbnail,imageMediaMetadata(location,time))');
       if (imagesFiles == null || imagesFiles.files == null) {
         return null;
       }
@@ -49,7 +54,6 @@ class GoogleAuthRepository {
   }
 
   Future<Uint8List?> fetchImage(File content, {double? size}) async {
-    print(content.thumbnailLink);
     if (content.hasThumbnail == null || content.hasThumbnail == false) {
       print('[${content.id}] has no thumbnail');
       return null;

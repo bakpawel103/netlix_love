@@ -1,11 +1,6 @@
-import 'dart:typed_data';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_netflix_responsive_ui/widgets/widgets.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class CustomAppBar extends StatelessWidget {
   final double scrollOffset;
@@ -46,15 +41,15 @@ class _CustomAppBarMobile extends StatelessWidget {
               children: [
                 _AppBarButton(
                   title: 'Strona główna',
-                  onTap: () => print('Strona główna'),
+                  onTap: () => null,
                 ),
                 _AppBarButton(
                   title: 'Seriale i programy',
-                  onTap: () => print('Seriale i programy'),
+                  onTap: () => null,
                 ),
                 _AppBarButton(
                   title: 'Filmy',
-                  onTap: () => print('Filmy'),
+                  onTap: () => null,
                 ),
               ],
             ),
@@ -79,27 +74,27 @@ class _CustomAppBarDesktop extends StatelessWidget {
               children: [
                 _AppBarButton(
                   title: 'Strona główna',
-                  onTap: () => print('Strona główna'),
+                  onTap: () => null,
                 ),
                 _AppBarButton(
                   title: 'Seriale i programy',
-                  onTap: () => print('Seriale i programy'),
+                  onTap: () => null,
                 ),
                 _AppBarButton(
                   title: 'Filmy',
-                  onTap: () => print('Filmy'),
+                  onTap: () => null,
                 ),
                 _AppBarButton(
                   title: 'Nowe i popularne',
-                  onTap: () => print('Nowe i popularne'),
+                  onTap: () => null,
                 ),
                 _AppBarButton(
                   title: 'Moja lista',
-                  onTap: () => print('Moja lista'),
+                  onTap: () => null,
                 ),
                 _AppBarButton(
                   title: 'Przeglądaj wg języka',
-                  onTap: () => print('Przeglądaj wg języka'),
+                  onTap: () => null,
                 ),
               ],
             ),
@@ -112,12 +107,12 @@ class _CustomAppBarDesktop extends StatelessWidget {
                 icon: Icon(Icons.search),
                 iconSize: 28.0,
                 color: Colors.white,
-                onPressed: () => print('Wyszukaj'),
+                onPressed: () => null,
               ),
               SizedBox(width: 20.0),
               _AppBarButton(
                 title: 'Dzieci',
-                onTap: () => print('Dzieci'),
+                onTap: () => null,
               ),
               SizedBox(width: 20.0),
               ClipOval(

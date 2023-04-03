@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:googleapis/drive/v3.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/google_drive_provider.dart';
@@ -24,6 +25,8 @@ class ContentList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(contentList.length);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Column(
@@ -43,6 +46,7 @@ class ContentList extends StatelessWidget {
           Container(
             height: isOriginals ? 500.0 : 220.0,
             child: ListView.builder(
+              shrinkWrap: true,
               padding: const EdgeInsets.symmetric(
                 vertical: 12.0,
                 horizontal: 16.0,
@@ -127,6 +131,13 @@ class ContentList extends StatelessWidget {
   _imageClicked(BuildContext context, File content) {
     var width = MediaQuery.of(context).size.width * 1 / 3;
 
+    DateTime? dateTime =
+        formatGoogleTimeToDateTime(content.imageMediaMetadata?.time);
+    String dateString = 'None';
+    if (dateTime != null) {
+      dateString = DateFormat.yMEd().add_jms().format(dateTime);
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -140,7 +151,7 @@ class ContentList extends StatelessWidget {
                 child: IconButton(
                   iconSize: 30,
                   color: Colors.white,
-                  icon: const Icon(Icons.remove),
+                  icon: const Icon(CupertinoIcons.clear),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -178,7 +189,7 @@ class ContentList extends StatelessWidget {
                             return SizedBox();
                           }
                           return Text(
-                            snapshot.data!,
+                            'Address: ${snapshot.data!}',
                             style: TextStyle(
                               color: Colors.white,
                             ),
@@ -192,6 +203,13 @@ class ContentList extends StatelessWidget {
                         }
                       },
                     ),
+                    SizedBox(height: 30.0),
+                    Text(
+                      'Date: $dateString',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -200,6 +218,27 @@ class ContentList extends StatelessWidget {
         );
       },
     );
+  }
+
+  DateTime? formatGoogleTimeToDateTime(String? text) {
+    if (text == null) {
+      return null;
+    }
+
+    text = text.replaceAll(' ', ':');
+    var array = text.split(':');
+
+    if (array.length < 6) {
+      return null;
+    }
+
+    return DateTime(
+        int.parse(array[0].trim()),
+        int.parse(array[1].trim()),
+        int.parse(array[2].trim()),
+        int.parse(array[3].trim()),
+        int.parse(array[4].trim()),
+        int.parse(array[5].trim()));
   }
 
   Future<Uint8List?> _buildBigImage(
@@ -222,8 +261,6 @@ class ContentList extends StatelessWidget {
       return "Can't find location...";
     }
 
-    print(content.imageMediaMetadata?.location?.toJson().toString());
-
     var response = await http.get(Uri.parse(
         'https://maps.googleapis.com/maps/api/geocode/json?latlng=${content.imageMediaMetadata?.location?.latitude},${content.imageMediaMetadata?.location?.longitude}&key=AIzaSyDlxDVy4VJHsbBfRGhuyC0PZsZR23i5HqY'));
 
@@ -232,8 +269,6 @@ class ContentList extends StatelessWidget {
         jsonDecode(response.body)['results'][0]['formatted_address'] == null) {
       return "Can't find location...";
     }
-
-    print(jsonDecode(response.body)['results'][0]?['formatted_address']);
 
     return jsonDecode(response.body)['results'][0]?['formatted_address'];
   }

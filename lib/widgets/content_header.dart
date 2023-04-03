@@ -90,13 +90,13 @@ class _ContentHeaderMobile extends StatelessWidget {
               VerticalIconButton(
                 icon: Icons.add,
                 title: 'List',
-                onTap: () => print('My List'),
+                onTap: () => null,
               ),
               _PlayButton(),
               VerticalIconButton(
                 icon: Icons.info_outline,
                 title: 'Info',
-                onTap: () => print('Info'),
+                onTap: () => null,
               ),
             ],
           ),
@@ -214,7 +214,7 @@ class __ContentHeaderDesktopState extends State<_ContentHeaderDesktop> {
                           Colors.white,
                         ),
                       ),
-                      onPressed: () => print('More Info'),
+                      onPressed: () => null,
                       icon: const Icon(Icons.info_outline, size: 30.0),
                       label: const Text(
                         'More Info',
@@ -264,7 +264,7 @@ class _PlayButton extends StatelessWidget {
           Colors.white,
         ),
       ),
-      onPressed: () => print('Play'),
+      onPressed: () => null,
       icon: const Icon(Icons.play_arrow, size: 30.0),
       label: const Text(
         'Play',
