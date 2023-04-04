@@ -21,6 +21,7 @@ class CustomAppBar extends StatelessWidget {
           Colors.black.withOpacity((scrollOffset / 350).clamp(0, 1).toDouble()),
       child: Responsive(
         mobile: _CustomAppBarMobile(),
+        tablet: _CustomAppBarTablet(),
         desktop: _CustomAppBarDesktop(),
       ),
     );
@@ -28,6 +29,19 @@ class CustomAppBar extends StatelessWidget {
 }
 
 class _CustomAppBarMobile extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Row(
+        children: [
+          Image.asset('assets/images/netflix_logo.png'),
+        ],
+      ),
+    );
+  }
+}
+
+class _CustomAppBarTablet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -90,10 +104,6 @@ class _CustomAppBarDesktop extends StatelessWidget {
                 ),
                 _AppBarButton(
                   title: 'Moja lista',
-                  onTap: () => null,
-                ),
-                _AppBarButton(
-                  title: 'Przeglądaj wg języka',
                   onTap: () => null,
                 ),
               ],

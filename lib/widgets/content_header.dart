@@ -124,6 +124,7 @@ class __ContentHeaderDesktopState extends State<_ContentHeaderDesktop> {
     _videoController = VideoPlayerController.asset('assets/videos/main.mov')
       ..initialize().then((_) => setState(() {}))
       ..setVolume(0)
+      ..setLooping(true)
       ..play();
   }
 
