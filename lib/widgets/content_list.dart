@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_netflix_responsive_ui/widgets/responsive.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:googleapis/drive/v3.dart';
@@ -143,6 +144,10 @@ class ContentList extends StatelessWidget {
 
   _imageClicked(BuildContext context, File content) {
     var width = MediaQuery.of(context).size.width * 1 / 3;
+
+    if (!Responsive.isDesktop(context)) {
+      width = MediaQuery.of(context).size.width * 3 / 4;
+    }
 
     DateTime? dateTime =
         formatGoogleTimeToDateTime(content.imageMediaMetadata?.time);
